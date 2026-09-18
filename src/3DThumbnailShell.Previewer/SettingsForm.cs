@@ -72,8 +72,9 @@ namespace _3DThumbnailShell.Previewer
         private static readonly int[] SsaaVals = { 4, 2, 1 };
         private static readonly string[] Interacts = { "100%", "50%", "33%", "25%" };
         private static readonly float[] InteractVals = { 1f, 0.5f, 0.333f, 0.25f };
-        private static readonly string[] MaxTris = { "不限制", "50000", "20000", "10000" };
-        private static readonly int[] MaxTriVals = { 0, 50000, 20000, 10000 };
+        // 渲染三角形上限档位：含大档位，超大多盘合并工程（百万+面）也能选合适上限几秒降面出图
+        private static readonly string[] MaxTris = { "不限制", "2000000", "1000000", "500000", "300000", "200000", "100000", "50000", "20000", "10000" };
+        private static readonly int[] MaxTriVals = { 0, 2000000, 1000000, 500000, 300000, 200000, 100000, 50000, 20000, 10000 };
         private static readonly string[] ShadowItems = { "无阴影", "低", "中", "高" };
         private static readonly float[] ShadowVals = { 0f, 0.33f, 0.66f, 1f };
         private static readonly string[] GizmoSizes = { "关", "小", "中 (默认)", "大" };
@@ -83,7 +84,7 @@ namespace _3DThumbnailShell.Previewer
         private static readonly string[] PresetKeys = { "presetCustom", "presetLow", "presetMedium", "presetHigh", "presetUltra" };
         private static readonly string[] BackendKeys = { "backendAuto", "backendGpu", "backendCpu" };
         private static readonly string[] SsaaKeys = { "ssaa4", "ssaa2", "ssaaOff" };
-        private static readonly string[] MaxTriKeys = { "maxUnlimited", "max50k", "max20k", "max10k" };
+        private static readonly string[] MaxTriKeys = { "maxUnlimited", "max2m", "max1m", "max500k", "max300k", "max200k", "max100k", "max50k", "max20k", "max10k" };
         private static readonly string[] ShadowKeys = { "shadowNone", "shadowLow", "shadowMed", "shadowHigh" };
         private static readonly string[] ThemeKeys = { "themeLight", "themeDark" };
         private static readonly string[] GizmoKeys = { "gizmoOff", "gizmoSmall", "gizmoMedium", "gizmoLarge" };

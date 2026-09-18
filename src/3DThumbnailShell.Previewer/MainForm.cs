@@ -849,6 +849,8 @@ namespace _3DThumbnailShell.Previewer
             var files = _folderFiles.ToArray(); // 快照
             var color = _view.Settings.ParseModelColor();
             var shadow = _view.Settings.ShadowLevel;
+            // LOD 上限取预览器设置（默认 30 万）：超大模型批量缩略图也能几秒降面处理
+            var maxTri = _view.Settings.MaxTriangles;
             var (tw, th) = _view.Settings.ThumbSize(512); // 缩略图保存比例(1:1/4:3/16:9)
 
             Task.Run(() =>
@@ -877,7 +879,7 @@ namespace _3DThumbnailShell.Previewer
                             ToYUp(mesh);
                             // 超采样：低分辨率下细密网格会出"白噪点"，放大渲染后降采样（与预览器管线一致）
                             var res = renderer.Render(mesh, tw, th,
-                                2.077f, 0.4974f, 3.1f, 0f, 0f, 1f, 0, color, shadow,
+                                2.077f, 0.4974f, 3.1f, 0f, 0f, 1f, maxTri, color, shadow,
                                 superSample: SoftwareRenderer.ThumbSuperSample(tw, th));
                             // backgroundColor=null → 透明底；按目标比例输出，保存透明 PNG（无白边）
                             if (res == null || res.Bgra == null || res.Bgra.Length == 0)

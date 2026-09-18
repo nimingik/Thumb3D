@@ -25,11 +25,12 @@ namespace _3DThumbnailShell.Core.Renderer
 
         // 光照参数见 Lighting（CPU/GPU 共用，GPU 后端引用同一常量保证观感一致）
 
-        public RenderResult Render(MeshData mesh, int size)
+        public RenderResult Render(MeshData mesh, int size, int maxTriangles = 0)
         {
-            // 兼容旧签名：正方形输出 + 默认相机视角（缩略图管线，带超采样抗锯齿）
+            // 兼容旧签名：正方形输出 + 默认相机视角（缩略图管线，带超采样抗锯齿）。
+            // maxTriangles > 0 时按等距抽稀（LOD），超大模型缩略图也能快速渲染（见 RenderTrianglesPass）。
             return Render(mesh, size, size, DefaultAz, DefaultEl, 3.1f, 0f, 0f, 1f,
-                0, null, 1f, 1f, true, null, 0.25f, null, false,
+                maxTriangles, null, 1f, 1f, true, null, 0.25f, null, false,
                 ThumbSuperSample(size, size), 0f, true, null, 0.25f);
         }
 

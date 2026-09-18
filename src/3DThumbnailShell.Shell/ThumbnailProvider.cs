@@ -413,7 +413,10 @@ namespace _3DThumbnailShell.Shell
                 }
 
                 Log("  步骤3: 渲染开始 size=" + size);
-                var res = new SoftwareRenderer().Render(mesh, size);
+                // 固定保守 LOD 上限（Shell 无预览器设置上下文）：超大模型（百万+面）等距抽稀到 30 万
+                // 面再逐三角形光栅化，几秒内出图，避免 explorer 缩略图长时间不显示。
+                const int thumbMaxTriangles = 300000;
+                var res = new SoftwareRenderer().Render(mesh, size, thumbMaxTriangles);
                 Log("  步骤4: 渲染完成 " + (res == null || res.Bgra == null ? -1 : res.Bgra.Length));
                 if (res == null || res.Bgra == null || res.Bgra.Length == 0)
                 {

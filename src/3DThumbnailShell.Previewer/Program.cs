@@ -75,7 +75,8 @@ namespace _3DThumbnailShell.Previewer
                     var v = mesh.Vertices[i];
                     mesh.Vertices[i] = new System.Numerics.Vector3(v.X, v.Z, -v.Y);
                 }
-                var res = new SoftwareRenderer().Render(mesh, 256);
+                // 固定保守 LOD 上限：超大模型缩略图也能几秒降面渲染（与 ThumbnailProvider/BatchSaveThumbnails 一致）
+                var res = new SoftwareRenderer().Render(mesh, 256, 300000);
                 if (res == null || res.Bgra == null) { Console.Error.WriteLine("dump-thumb 失败: 渲染无输出"); return; }
                 using (var bmp = new Bitmap(res.Width, res.Height, PixelFormat.Format32bppArgb))
                 {

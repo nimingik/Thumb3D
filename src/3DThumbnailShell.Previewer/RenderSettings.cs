@@ -38,8 +38,11 @@ namespace _3DThumbnailShell.Previewer
         /// <summary>交互拖动过程中的分辨率缩放：1 / 0.5 / 0.33 / 0.25（越小越流畅）。</summary>
         public float InteractScale { get; set; } = 1f;
 
-        /// <summary>渲染三角形数量上限：0=不限制；其余按网格总面数等距抽稀到该上限（LOD）。</summary>
-        public int MaxTriangles { get; set; } = 0;
+        /// <summary>
+        /// 渲染三角形数量上限：0=不限制；其余按网格总面数等距抽稀到该上限（LOD）。
+        /// 默认 300000：超大多盘合并工程（数百万面）也能在几秒内降面出图，避免逐三角形光栅化挂起。
+        /// </summary>
+        public int MaxTriangles { get; set; } = 300000;
 
         /// <summary>渲染后端：Auto / Gpu / Cpu。</summary>
         public RendererMode Mode { get; set; } = RendererMode.Auto;
@@ -158,11 +161,12 @@ namespace _3DThumbnailShell.Previewer
                     s.ResolutionScale = 0.5f;  s.Ssaa = 2; s.InteractScale = 0.5f;  s.MaxTriangles = 20000;
                     break;
                 case QualityPreset.High:
-                    s.ResolutionScale = 0.75f; s.Ssaa = 2; s.InteractScale = 0.75f; s.MaxTriangles = 50000;
+                    // 默认档：30 万面上限，即使百/数百万面的超大工程也能几秒降面出图（不放假死不限制）
+                    s.ResolutionScale = 0.75f; s.Ssaa = 2; s.InteractScale = 0.75f; s.MaxTriangles = 300000;
                     break;
                 case QualityPreset.Ultra:
                 default:
-                    s.ResolutionScale = 1f;    s.Ssaa = 4; s.InteractScale = 1f;    s.MaxTriangles = 0;
+                    s.ResolutionScale = 1f;    s.Ssaa = 4; s.InteractScale = 1f;    s.MaxTriangles = 1000000;
                     break;
             }
             return s;

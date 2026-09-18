@@ -21,6 +21,9 @@ namespace _3DThumbnailShell.Core.Formats
         public bool CanParse(string ext) => ext == ".3mf";
 
         private static readonly CultureInfo Ci = CultureInfo.InvariantCulture;
+
+        /// <summary>子模型缓存中"主模型入口"的键：component 省略 path 时指向当前模型文件本身。</summary>
+        private const string MainModelKey = "__main__";
         private static readonly XmlReaderSettings ReaderSettings = new XmlReaderSettings
         {
             IgnoreComments = true,
@@ -367,8 +370,7 @@ namespace _3DThumbnailShell.Core.Formats
         {
             var path = GetAttr(r, "path");
             var idStr = GetAttr(r, "objectid");
-            if (string.IsNullOrEmpty(path) ||
-                !int.TryParse(idStr, NumberStyles.Integer, Ci, out var oid)) return;
+            if (!int.TryParse(idStr, NumberStyles.Integer, Ci, out var oid)) return;
             var t = ParseTransform(GetAttr(r, "transform"));
             // 变换顺序（3MF 规范）：component 的 transform 先作用于自身坐标（进入父对象空间），
             // 再由父级（build item）变换摆放到世界空间 → 行向量约定下必须 t = compT * parentT。
@@ -376,7 +378,26 @@ namespace _3DThumbnailShell.Core.Formats
             if (parentT.HasValue)
                 t = (t ?? Matrix4x4.Identity) * parentT.Value;
 
-            var rel = path.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+            // path 缺省 = 引用同一模型文件内的 object（BambuStudio 组装体 <component objectid="N"/>
+            // 通常省略 path，3MF 规范亦允许）→ 用主模型入口解析；显式 path 才是跨子模型文件引用。
+            ZipArchiveEntry subEntry;
+            string rel;
+            if (string.IsNullOrEmpty(path))
+            {
+                rel = MainModelKey;
+                subEntry = zip.Entries.FirstOrDefault(e =>
+                    e.FullName.Equals("3D/3dmodel.model", StringComparison.OrdinalIgnoreCase) ||
+                    e.FullName.EndsWith(".model", StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                rel = path.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                subEntry = zip.GetEntry(rel)
+                           ?? zip.Entries.FirstOrDefault(e =>
+                               e.FullName.Replace('/', Path.DirectorySeparatorChar)
+                                   .Equals(rel, StringComparison.OrdinalIgnoreCase));
+            }
+            if (subEntry == null) return;
             if (usedParts != null)
             {
                 var w = t ?? Matrix4x4.Identity;
@@ -386,12 +407,7 @@ namespace _3DThumbnailShell.Core.Formats
             }
             if (!subCache.TryGetValue(rel, out var objects))
             {
-                var subEntry = zip.GetEntry(rel)
-                               ?? zip.Entries.FirstOrDefault(e =>
-                                   e.FullName.Replace('/', Path.DirectorySeparatorChar)
-                                       .Equals(rel, StringComparison.OrdinalIgnoreCase));
-                if (subEntry == null) return;
-                objects = ParseSubModel(subEntry, palette, colorGroups);
+                objects = ParseSubModel(subEntry, palette, colorGroups, rel == MainModelKey);
                 subCache[rel] = objects;
             }
 
@@ -424,12 +440,16 @@ namespace _3DThumbnailShell.Core.Formats
         }
 
         /// <summary>一次性解析子模型：返回 objectId -> SubMesh（含负零件标记与逐面色），不做 transform。
-        /// 先解析子模型自己的 colorgroup（无则回退父入口的 colorGroups）。</summary>
+        /// 先解析子模型自己的 colorgroup（无则回退父入口的 colorGroups）。
+        /// reuseParentGroups=true（component 省略 path、引用主模型自身）时直接复用父级色组，
+        /// 省去对同一大文件重复全量扫描。</summary>
         private static Dictionary<int, SubMesh> ParseSubModel(ZipArchiveEntry entry, List<Vector4> palette,
-            Dictionary<int, List<Vector4>> parentGroups)
+            Dictionary<int, List<Vector4>> parentGroups, bool reuseParentGroups = false)
         {
             var result = new Dictionary<int, SubMesh>();
-            var groups = ReadColorGroups(entry);
+            var groups = (reuseParentGroups && parentGroups != null)
+                ? parentGroups
+                : ReadColorGroups(entry);
             if (groups.Count == 0 && parentGroups != null) groups = parentGroups;
             using (var es = entry.Open())
             using (var sr = XmlReader.Create(es, ReaderSettings))
