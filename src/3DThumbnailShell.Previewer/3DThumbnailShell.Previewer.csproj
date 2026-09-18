@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>_3DThumbnailShell.Previewer</RootNamespace>
+    <AssemblyName>3DThumbnailShell.Previewer</AssemblyName>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Thumb3D 三维缩略图助手</Product>
+    <Company>匿名IK</Company>
+    <Copyright>Copyright © 匿名IK</Copyright>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\3DThumbnailShell.Core\3DThumbnailShell.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Vortice.Direct3D11" Version="3.8.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\welcome.png" />
+    <EmbeddedResource Include="Resources\app.ico" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>disable</Nullable>
+    <RootNamespace>_3DThumbnailShell.Shell</RootNamespace>
+    <AssemblyName>3DThumbnailShell.Shell</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- 强命名：mscoree 托管 COM 激活更稳定 -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 无 VS 环境下用 dotnet SDK 编译 net48 所需的编译期引用程序集 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- 合并 Core 源码后需要压缩/XML 引用（Core.csproj 里 net461 显式引用了这两项） -->
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- 关键：把 Core 源码直接编译进 Shell.dll，做成单文件组件。
+         原因：mscoree 托管 COM 激活按 Load 语义(GAC+appbase)解析依赖，
+         无法从 CodeBase 目录加载 Core.dll → 0x80131522 类型加载失败。
+         合并后 Shell.dll 只依赖框架 GAC 程序集，CodeBase 单文件即可激活。 -->
+    <Compile Include="..\3DThumbnailShell.Core\**\*.cs"
+             Exclude="..\3DThumbnailShell.Core\obj\**\*;..\3DThumbnailShell.Core\bin\**\*"
+             Link="Core\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

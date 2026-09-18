@@ -1,0 +1,18 @@
+# 构建产物
+bin/
+obj/
+dist/
+
+# 运行库 / 第三方 DLL
+*.dll
+*.exe
+*.pdb
+
+# VS / IDE
+.vs/
+*.user
+*.suo
+
+# 本机临时文件
+Thumb3D—三维缩略图助手.lnk
+test_color.3mf

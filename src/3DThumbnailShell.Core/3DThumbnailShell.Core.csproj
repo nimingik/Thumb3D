@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- netstandard2.0：供 net8 预览器/工具引用；net461：供 net48 Shell 引用，
+         使 Shell 运行时绑定到 4.1.4.0 门面，规避 netstandard2.0 契约版本(4.1.3.0)与门面不符的 0x80131040 -->
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <LangVersion>9</LangVersion>
+    <Nullable>disable</Nullable>
+    <RootNamespace>_3DThumbnailShell.Core</RootNamespace>
+    <AssemblyName>3DThumbnailShell.Core</AssemblyName>
+    <!-- 与 Shell/CoreVerify 同钥强命名：避免强命名程序集引用弱命名依赖时的绑定失败(0x80131044) -->
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 仅 netstandard2.0 需要该包；net461 用 .NET Framework 自带的 System.Numerics.Vectors 4.0.0.0（GAC 必有），
+         否则 mscoree 托管 COM 激活时按 GAC 找不到 4.1.4.0 门面 → 0x80131522 类型加载失败 -->
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <!-- 无 VS 环境下用 dotnet SDK 编译 net461 所需的编译期引用程序集 -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <!-- net461 默认引用集不含压缩/XML 程序集，需显式引用 -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="CoreVerify, PublicKey=0024000004800000140100000602000000240000525341310008000001000100F9E511239470343D23D0078C3000D7B44E64192705BD9EFE1A24EA0552C31EEF1FA2CB322E2DAC2813876A634CCFD4110BA204F5677FB1EC4B35A435EF1BB2C2788D39B012353360E2A92739D0AA19962543F62C186A70F24736BBCAEE84586AE608806BAD8717059B28AB381E74194A59D18155044A33388DFA72F3EE7DAB856305C291CE44F44711C3A752C187E361EC687CDD9BAEB135BC74939A950A85F11B73F93ACADBF752ACFF474586B13C8074599E68564A8ED6BEF7289C9CE0CB8744854368BEE0F52A4D50DE6F281FADC2A503AA470F05846AD338A79546BBAA2057C7C1C08F83607E7482ECB9F5879401A7D387A8E6A756D2B59476C39FCB16B5" />
+  </ItemGroup>
+</Project>
