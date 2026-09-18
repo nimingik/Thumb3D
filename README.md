@@ -1,4 +1,4 @@
-# Thumb3D（三维缩略图助手）
+﻿# Thumb3D（三维缩略图助手）
 
 一个 3D 模型查看与缩略图生成工具：提供 3D 交互预览，并为 Windows 资源管理器生成 3D 文件的缩略图。
 
@@ -42,6 +42,13 @@ dotnet build src/3DThumbnailShell.Shell -c Release
 - 打开文件，或直接把文件拖进窗口
 - 左键拖动旋转、滚轮缩放、右键/中键平移、左键双击复位
 - 首次安装"缩略图扩展"后，资源管理器即显示 3D 文件缩略图
+
+
+## 作者
+
+- 制作者：匿名IK
+- Bilibili：<https://space.bilibili.com/41807397>
+- GitHub：<https://github.com/nimingik>
 
 ## 许可证
 
