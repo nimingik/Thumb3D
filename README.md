@@ -5,7 +5,7 @@
 ## 功能特性
 
 - **3D 交互预览**：旋转 / 缩放 / 平移，多视角一键切换（Gizmo）
-- **多格式解析**：支持 STL / 3MF / OBJ / PLY / OFF / AMF / GLB / GLTF / GCODE / STEP 等
+- **多格式解析**：支持 STL / 3MF / OBJ / PLY / OFF / AMF / GLB / GLTF / GCODE / STEP 等（目前主要支持3mf与stl）
 - **3MF 多盘工程**：可在各盘之间切换或查看合并视图
 - **负零件 / 修改器识别**：Bambu/Orca 工程的 negative_part 与 modifier_part 会独立分层显示，可分别调颜色与透明度
 - **两种渲染后端**：GPU（Direct3D 11）/ CPU（纯软件光栅化），CPU 后端无需显卡即可运行
